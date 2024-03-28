@@ -1,0 +1,360 @@
+---
+title: "Project1-Noah-Carlos"
+author: "Noah Carlos"
+output: html_document
+---
+
+### A) Data IBTrACS
+
+
+**A.1) Load R Packages**
+
+```{r}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(lubridate)
+library(spData)
+library(gganimate)
+library(rnaturalearth)
+
+```
+
+
+
+**A.2) Import Data into R**
+
+Importing and creating table with necessary columns. This chunk includes vectors for the column names and classes, and also assigning dat to our data table.
+```{r}
+column_names <- c('SID', 'season', 'number', 'basin', 'subbasin', 'name', 'iso_time', 'nature', 'lat', 'lon', 'wmo_wind', 'wmo_pres', 'wmo_agency', 'track_type', 'dist2land', 'landfall')
+
+col_class <- c('character','integer','integer','character','character','character','character','character','real', 'real', 'integer', 'integer', 'character', 'character', 'integer', 'integer', rep('NULL',147) )
+
+dat <- read.csv('ibtracs.NA.list.v04r00.csv',
+                                 colClasses = (col_class),
+                                 stringsAsFactors = FALSE,
+                                 skip = 77876,
+                                 na = c('MM', 'N/A','NOT_NAMED')
+                                 )
+colnames(dat)<- column_names
+
+head(dat)
+```
+
+
+
+**A.3) Adding MONTH column**
+
+```{r}
+dat$iso_time = as.POSIXct(dat$iso_time)
+dat$month <- lubridate::month(dat$iso_time)
+str(dat, vec.len = 1)
+head(dat)
+
+
+```
+
+
+
+### Part B
+
+Evaluate if the claims are true or false
+
+**B.1.a) The 2020 Atlantic hurricane season featured a total of 31 tropical cyclones, all but one of which became a named storm. As expected, none of the tropical cyclones formed pre-season.** 
+
+To evaluate this claim, I will first use filter to look at the the hurricane data from the 2020 season in the Atlantic and confirm that there were in fact 31 tropical storms, where all of which were named except one.
+```{r}
+
+atl_2020_distinct <- dat %>%
+  filter(season == 2020)%>%
+  filter(basin == 'NA' | basin == 'SA')%>%
+  distinct(name)
+
+
+atl_2020_distinct
+  
+```
+
+There are in fact 31 tropical cyclones in the 2020 Atlantic season, where one of which  is unnamed, but now I want to confirm that there was only one storm in this season which was unnamed in order to be sure we are not under counting.  By filtering the original table down to all of the rows which utilized the 'Not Available' logical within the 2020 season we can get a more specified look into the details of each account of unnamed storms, rather than just having it show up as a unique value in the previous table.
+
+```{r}
+
+atl_2020_NA <- dat%>%
+  filter(season ==2020)%>%
+  filter(is.na(name))
+  
+head(atl_2020_NA)
+```
+
+In the resulting table above, the 'iso_time' variable in each row representing the unnamed storm was recorded every three hours from 2020-07-29 18:00:00 up until 2020-08-02 00:00:00. Since each storm is recorded every three hours, and it is highly unlikely that a first unnamed storm stopped and a second unnamed storm began being recorded within an exact three hour interval. Therefore it is safe to say that this is the only unnamed storm which occurred in the 2020 Atlantic season.
+
+Now to confirm that none of these tropical cyclones formed pre-season, I will need to work with a data frame with all rows containing storms from the Atlantic 2020 season. We will use this data and the fact that the official Atlantic hurricane season runs from June through November to confirm whether or not this statement is entirely true. 
+
+```{r}
+
+atl_2020_preseason <- dat%>%
+  filter(season == 2020 & month < 6)
+
+head(atl_2020_preseason)
+
+```
+
+Through this method, we can see that in fact there were two storms, Arthur and Bertha which formed before the start of the 2020 Atlantic season.
+
+In conclusion, the statement provided in prompt B.1.a) is _false_.
+
+
+
+**B.1.b) Of the named storms in the 2020 Atlantic hurricane season, seven of the hurricanes intensified into major hurricanes although none of them reached Category 5 status.**
+
+In order to check the validity of this statement, I will start by creating a table of all the major hurricanes in the 2020 Atlantic hurricane season. From there, filtering our results to confirm that seven named storms intensify to major hurricanes and that none of these reach Category 5 status.
+
+Since major storms are specified by being Category 3 or higher and the requisite to be Category 3 means winds are above 96 kt, finding the table for all major storms in the 2020 Atlantic season means we must filter by the variable 'wmo_wind' to those greater than or equal to 96.
+```{r}
+atl_major_2020 <- dat%>%
+  filter(season == 2020 & wmo_wind >= 96)%>%
+  filter(basin == 'NA' | basin == 'SA')
+  
+
+head(atl_major_2020)
+
+```
+
+
+Now confirming that seven named hurricanes reached major hurricane status,
+```{r}
+distinct(atl_major_2020, name)
+
+```
+
+
+Checking if any of these hurricanes made it to Category 5 status means looking to see if any had winds greater than 137kt. Using the same method as above,
+```{r}
+filter(atl_major_2020, wmo_wind >=137)
+
+```
+
+Since this code returned zero rows, none of the named hurricanes reached Category 5 status. To confirm our findings, let us check the maximum wind recorded of these storms,
+```{r}
+summarise(atl_major_2020, max_wind = max(wmo_wind))
+```
+
+The maximum wind recorded during the Atlantic 2020 hurricane season was 135 kt, falling short of Category 5 status by 2 kt.  Thus, we have found that of the named storms in the Atlantic 2020 hurricane season, seven hurricanes intensified to major hurricanes and none of which reached Category 5 status. Therefore, B.1.b) is _true_.
+
+
+
+**B.1.c) The 2010 Atlantic hurricane season had 19 named storms. Despite this above average activity, not one hurricane hit the United States. **
+
+To investigate this claim, I will filter a table down to the Atlantic 2010 season and confirm the number of unique storms and then look into the 'landfall' variable to see whether or not any reach land.
+
+```{r}
+atl_2010 <- dat%>%
+  filter(season == 2010)%>%
+  filter(basin == 'NA' | basin == 'SA')
+
+distinct(atl_2010,name)
+```
+
+The code above shows that there were 20 storms in the Atlantic 2010 season, 19 of which were named. This is aligned with the statement provided, so we will continue to confirm that none of these storms hit the US.
+
+First finding the storms which posses rows in which the 'landfall' column is zero at some point because this would entail the storm hitting land.
+
+```{r}
+landfall_2010<-filter(atl_2010, landfall == 0)
+
+head(landfall_2010)
+
+
+```
+
+
+Now that we have a this list of storms where 'landfall' is zero, lets not make a map and plot where each of these storms are.
+
+```{r}
+landfall_map <- maps::map(database = 'world', regions = 'usa')
+points( x = landfall_2010$lon, y = landfall_2010$lat, col = 'Blue')
+title(main = 'Storm Landfall in 2010')
+
+
+```
+
+
+Evaluating our map of the United States overlapped with points of storms where 'landfall == 0', we can see that there are some points within the United States, thus contradicting the claim that not one of the 19 named storms of the 2010 Atlantic season hit the United States.
+
+Therefore B.1.c) is _false_.
+
+
+
+**B.1.d) The 2005 Atlantic hurricane season featured a total of 27 named storms, seven of which became major hurricanes, making this the season with the most number of major hurricanes during the period 1970-2020.**
+
+In order to evaluate if there were 27 named storms in the 2005 Atlantic Hurricane season, seven of which were major hurricanes, and was in fact the year with the most major hurricanes between 1970-2020 I will first confirm that there were 27 named storms.
+
+Using methods with group_by and distinct like previous claims.
+```{r}
+atl_2005 <- dat%>%
+  filter(season ==2005)%>%
+  distinct(name)
+
+atl_2005
+
+```
+
+This output shows that there are 28 unique names of the 2005 season, but one of which is representing the unnamed storms, therefore there are in fact 27 named storms.
+
+Now creating a table which includes the count of the most major hurricanes by season so we can see which has the most. This can be done by utilizing the fact that to be a major hurricane the variable 'wmo_wind' must be greater than or equal to 96. From there I will apply group_by and summarise to get the a count of the number of storms in each year. Once seeing the maximum number of major storms, I will filter the table to that amount to confirm 2005 has the most.
+
+```{r}
+
+
+most_majorh<-dat%>%
+  filter(wmo_wind>=96)%>%
+  group_by(season)%>%
+  summarise(total_major = n_distinct(name))
+
+
+filter(most_majorh, total_major == 7)
+head(most_majorh)
+```
+
+
+Looking at the table 'most_majorh', we can see that the most total storms in one season was 7 which did in fact occur in the year 2005, but this same number of major storms also occurred in the year 2020 as well. Since the statement we are checking to be true claims that 2005 had the most major hurricanes from 1970 - 2020, this does not hold true since there is a tie for the most major hurricanes between the two seasons of 2005 and 2020.
+
+Thus, claim b.1.d) is _false_.
+
+
+
+**B.1.e) In the period from 1970 to 2020, the 2020 Atlantic hurricane season was the most active on record. By “active” we mean the season with the most tropical cyclones.**
+
+Since we are using the term 'tropical cyclone' to reference all of the storms in this database, I will evaluate which season is the most 'active' by checking for which has the highest number of unique storm entries in the database.  This will use similar methods as claim _C1.d)_, but also requires counting the number of unique unnamed storms as well.
+
+First, I will find a count for the total number of unique, unnamed storms for each year utilizing the fact that even unnamed storms have a unique SID.
+```{r}
+active_season_na<- dat%>%
+  distinct(SID, .keep_all = TRUE)%>%
+  group_by(season)%>%
+  summarise(dist_na = sum(is.na(name)) )
+  
+
+active_season_na
+
+```
+
+
+Now onto finding the count of named storms for each year. This will be done grouping by season, then using summarise to count the number of distinct names, removing all NA values.
+```{r}
+active_season_named<-dat%>%
+  group_by(season)%>%
+  summarise(name_count = n_distinct(name, na.rm=TRUE))
+
+
+head(active_season_named)
+
+```
+
+
+Now I will make a new dataframe with season, named count, unnamed count, and add a 'total' column which is the sum of named and unnamed. This will be done by turning each count column into vectors, and using _mapply()_ to add the vectors together making the total column and bringing it all together in a new dataframe.
+```{r}
+named = c(select(active_season_named, name_count))
+
+na = c(select(active_season_na, dist_na))
+
+season = c(select(active_season_na, season))
+
+total_storms <- mapply('+',na,named)
+
+storm_count <-data.frame(season, named, na, total_storms)
+
+storm_count
+
+```
+
+
+Lastly, we need to confirm that the 2020 season was the most 'active' season between 1970 and 2020. First by finding the number of storms in the most active season, then filtering the dataframe to show only the season with that many distinct storms.
+```{r}
+storm_count%>%
+  summarise(most_active = max(dist_na.1))
+
+
+filter(storm_count, dist_na.1 == 31)
+```
+
+
+We can see that in fact two seasons had 31 storms, the maximium number. While 2020 was one of the most active seasons from 1970 to 2020, it was not solely the most active season but is tied with 2005.
+
+This means that B.1.e) is _false_.
+
+
+
+**B.1.f) In the 2020 Atlantic hurricane season, 14 storms intensified into hurricanes, making this season the one with the most number of hurricanes during the period 1970 to 2020.**
+
+In order to evaluate this claim, I will work with the entire dataset from 1970 to 2020, using the fact that hurricanes are storms with winds at least 64 kt to filter down to only hurricanes. From there I can find out the number of distinct hurricanes for each season and confirm whether or not 2020 did in fact have the highest number of hurricanes.
+
+To get the desired table, I will pipe commands to filter by wind speeds to only have rows which qualify it to be a hurricane, also find distinct SID so that I can get the unique storms instead of distinct name where it could potentially bring together NA values, giving inaccurate results. I will also use .keep_all=TRUE since we are not done with using the other data. Then grouping by season and using summarise and n_distinct to count the number of distinct SIDs in each season provides us with the table.
+
+
+```{r}
+atl_hurricanes<- dat%>%
+  filter(wmo_wind >=64)%>%
+  distinct(SID, .keep_all = TRUE)%>%
+  group_by(season)%>%
+  summarise(total_hurricanes = n_distinct(SID))
+
+head(atl_hurricanes)
+
+```
+
+
+Now lets see which value is the max of the total_hurricanes column
+```{r}
+summarise(atl_hurricanes, max = max(total_hurricanes))
+
+```
+
+
+There were 15 hurricanes in the year which had the most hurricanes, which is already contradictory to the claim we are investigating. Now just looking to see which season that was
+```{r}
+filter(atl_hurricanes, total_hurricanes == 15)
+
+```
+
+
+We can now see that the season with the most hurricanes was the 2005 season, with 15 in total. Therefore B.1.f) is _false_.
+
+
+
+
+
+___B.2)___
+
+Make an animated map of storms in 2020, to display their paths (or trajectories).
+
+
+```{r}
+atl2020_plot <- dat%>%
+  filter(season == 2020)
+
+
+world_map = map_data('world')
+atl_2020_animate<- ggplot()+geom_polygon(data = world_map,aes(x=long,y=lat, group=group)) + 
+          geom_point(data = atl2020_plot, aes(x=lon, y=lat, color = name)) + theme_bw() +
+          xlim(c(-150,0)) +
+          ylim(c(0,90)) +
+          xlab('Longitude') + 
+          ylab('Latitude') +
+          transition_states(name, transition_length = 3, state_length=2)
+          
+
+
+atl_2020_animate
+
+
+```
+
+
+
+
+
+
+
+
+
+
