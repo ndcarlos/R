@@ -27,7 +27,7 @@ Git-Hub repository at: https://github.com/ndcarlos/R/tree/main/hurricanes-projec
 - Resources used in this project include tidyverse, lubridate, spData, gganimate, and rnaturalearth within RStudio
   
 
-## Description of the data set {#dataset}
+## <a name="dataset"> </a> Description of the data set
 
 - IBTraCS merges Tropical Cyclone storm track datasets from agencies around the world to create a global, best track Tropical Cyclone database.
   
@@ -36,7 +36,7 @@ Git-Hub repository at: https://github.com/ndcarlos/R/tree/main/hurricanes-projec
 - Detailed data dictionary is available in this Git Hub folder at https://github.com/ndcarlos/R/blob/main/hurricanes-project-stat133/IBTrACS_v04_column_documentation.pdf
 
 
-## General purpose {#general-purpose}
+## <a name="general-purpose"></a> General purpose
 
 - Utilize tidyverse and create plots to confirm validity of true of false statements provided
 - Use gganimate to display paths or trajectories of storms from 2020 
