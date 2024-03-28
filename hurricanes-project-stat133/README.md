@@ -12,3 +12,31 @@ Git-Hub repository at: https://github.com/ndcarlos/R/tree/main/hurricanes-projec
 - data set: https://www.ncei.noaa.gov/data/international-best-track-archive-for-climate-stewardship-ibtracs/v04r00/access/csv/ibtracs.NA.list.v04r00.csv
 
 ![](https://github.com/ndcarlos/R/blob/main/hurricanes-project-stat133/hurricane.webp)
+
+
+# Table of Contents
+
+1. [Introduction](#introduction)
+2. [Description of the data set](#dataset)
+3. [General purpose](#general-purpose)
+
+
+## Introduction {#introduction}
+
+- This README provides an overview of the work done on the IBTrACS data set for project 1 in Statistics 133: Concepts of Computing with Data.
+- Resources used in this project include tidyverse, lubridate, spData, gganimate, and rnaturalearth within RStudio
+  
+
+## Description of the data set {#dataset}
+
+- IBTraCS merges Tropical Cyclone storm track datasets from agencies around the world to create a global, best track Tropical Cyclone database.
+  
+- Complete details of methodologies and agencies involved in creation of this database are avaiable at https://www.ncei.noaa.gov/products/international-best-track-archive
+
+- Detailed data dictionary is available in this Git Hub folder at https://github.com/ndcarlos/R/blob/main/hurricanes-project-stat133/IBTrACS_v04_column_documentation.pdf
+
+
+## General purpose {#general-purpose}
+
+- Utilize tidyverse and create plots to confirm validity of true of false statements provided
+- Use gganimate to display paths or trajectories of storms from 2020 
