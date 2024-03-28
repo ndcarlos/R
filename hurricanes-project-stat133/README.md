@@ -21,7 +21,7 @@ Git-Hub repository at: https://github.com/ndcarlos/R/tree/main/hurricanes-projec
 3. [General purpose](#general-purpose)
 
 
-## Introduction {#introduction}
+## <a name="introduction"></a> Introduction 
 
 - This README provides an overview of the work done on the IBTrACS data set for project 1 in Statistics 133: Concepts of Computing with Data.
 - Resources used in this project include tidyverse, lubridate, spData, gganimate, and rnaturalearth within RStudio
