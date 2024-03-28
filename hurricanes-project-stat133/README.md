@@ -9,4 +9,4 @@
 Git-Hub repository at: https://github.com/ndcarlos/R/tree/main/hurricanes-project-stat133
 
 - RStudio: **project1-Noah-Carlos.Rmd**
-- data set: https://www.ncei.noaa.gov/data/international-best-track-archive-for-climate-stewardship-ibtracs/v04r00/access/csv/ibtracs.NA.list.v04r00.csv(ibtracs.NA.list.v04r00.csv)
+- data set: [https://www.ncei.noaa.gov/data/international-best-track-archive-for-climate-stewardship-ibtracs/v04r00/access/csv/ibtracs.NA.list.v04r00.csv](ibtracs.NA.list.v04r00.csv)
