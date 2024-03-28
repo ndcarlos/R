@@ -11,4 +11,4 @@ Git-Hub repository at: https://github.com/ndcarlos/R/tree/main/hurricanes-projec
 - RStudio: **project1-Noah-Carlos.Rmd**
 - data set: https://www.ncei.noaa.gov/data/international-best-track-archive-for-climate-stewardship-ibtracs/v04r00/access/csv/ibtracs.NA.list.v04r00.csv
 
-![]([https://github.com/Your_Repository_Name/Your_GIF_Name.gif](https://github.com/ndcarlos/R/blob/main/hurricanes-project-stat133/hurricane.webp))
+![](https://github.com/ndcarlos/R/blob/main/hurricanes-project-stat133/hurricane.webp)
