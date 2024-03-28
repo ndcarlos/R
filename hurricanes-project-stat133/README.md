@@ -25,7 +25,7 @@ Git-Hub repository at: https://github.com/ndcarlos/R/tree/main/hurricanes-projec
 
 - This README provides an overview of the work done on the IBTrACS data set for project 1 in Statistics 133: Concepts of Computing with Data.
 - Resources used in this project include tidyverse, lubridate, spData, gganimate, and rnaturalearth within RStudio
-- To view the html file copy the link from the folder and insert it here https://htmlpreview.github.io/?
+- To view the html file copy the link from the folder and insert it here https://htmlpreview.github.io/
   
 
 ## <a name="dataset"> </a> Description of the data set
